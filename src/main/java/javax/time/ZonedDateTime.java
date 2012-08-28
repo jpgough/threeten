@@ -993,6 +993,7 @@ public final class ZonedDateTime
      */
     public ZonedDateTime with(DateTimeField field, long newValue) {
         if (field instanceof LocalDateTimeField) {
+            // TODO handle offset fields
             return withDateTime(toLocalDateTime().with(field, newValue));
         }
         return field.doSet(this, newValue);

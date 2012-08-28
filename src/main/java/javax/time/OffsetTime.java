@@ -280,6 +280,13 @@ public final class OffsetTime
     @Override
     public long get(DateTimeField field) {
         if (field instanceof LocalDateTimeField) {
+            switch ((LocalDateTimeField) field) {
+                case OFFSET_SECOND_OF_MINUTE:
+                case OFFSET_TOTAL_SECONDS:
+                case OFFSET_MINUTE_OF_HOUR:
+                case OFFSET_HOUR:
+                    return offset.get(field);
+            }
             return time.get(field);
         }
         return field.doGet(this);
@@ -428,6 +435,13 @@ public final class OffsetTime
      */
     public OffsetTime with(DateTimeField field, long newValue) {
         if (field instanceof LocalDateTimeField) {
+            switch ((LocalDateTimeField) field) {
+                case OFFSET_SECOND_OF_MINUTE:
+                case OFFSET_TOTAL_SECONDS:
+                case OFFSET_MINUTE_OF_HOUR:
+                case OFFSET_HOUR:
+                    return with(time, offset.with(field, newValue));
+            }
             return with(time.with(field, newValue), offset);
         }
         return field.doSet(this, newValue);

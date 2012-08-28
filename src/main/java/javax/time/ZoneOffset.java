@@ -36,6 +36,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.time.calendrical.DateTime;
+import javax.time.calendrical.DateTimeBuilder;
+import javax.time.calendrical.DateTimeField;
+import javax.time.calendrical.LocalDateTimeField;
 
 /**
  * A time-zone offset from UTC, such as {@code +02:00}.
@@ -70,7 +73,7 @@ import javax.time.calendrical.DateTime;
  * This class is immutable and thread-safe.
  */
 public final class ZoneOffset
-        implements Comparable<ZoneOffset>, Serializable {
+        implements DateTime, Comparable<ZoneOffset>, Serializable {
 
     /** Cache of time-zone offset by offset in seconds. */
     private static final ConcurrentMap<Integer, ZoneOffset> SECONDS_CACHE = new ConcurrentHashMap<Integer, ZoneOffset>(16, 0.75f, 4);
@@ -479,6 +482,52 @@ public final class ZoneOffset
      */
     public int getSecondsField() {
         return totalSeconds % SECONDS_PER_MINUTE;
+    }
+
+    //-----------------------------------------------------------------------
+    @Override
+    public long get(DateTimeField field) {
+        if (field instanceof LocalDateTimeField) {
+            switch ((LocalDateTimeField) field) {
+                case OFFSET_SECOND_OF_MINUTE: return getSecondsField();
+                case OFFSET_TOTAL_SECONDS: return totalSeconds;
+                case OFFSET_MINUTE_OF_HOUR: return getMinutesField();
+                case OFFSET_HOUR: return getHoursField();
+            }
+            throw new CalendricalException("Unsupported field: " + field.getName());
+        }
+        return field.doGet(this);
+    }
+
+    @Override
+    public ZoneOffset with(DateTimeField field, long newValue) {
+        if (field instanceof LocalDateTimeField) {
+            LocalDateTimeField f = (LocalDateTimeField) field;
+            int val = f.checkValidIntValue(newValue);
+            switch (f) {
+                // match signs - +10:30 -> -06:30 seting hour to -6
+                case OFFSET_SECOND_OF_MINUTE: throw new UnsupportedOperationException("TODO");
+                case OFFSET_TOTAL_SECONDS: return ofTotalSeconds(val);
+                case OFFSET_MINUTE_OF_HOUR: throw new UnsupportedOperationException("TODO");
+                case OFFSET_HOUR: throw new UnsupportedOperationException("TODO");
+            }
+            throw new CalendricalException("Unsupported field: " + field.getName());
+        }
+        return field.doSet(this, newValue);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T extract(Class<T> type) {
+        if (type == ZoneOffset.class) {
+            return (T) this;
+        } else if (type == Class.class) {
+            return (T) ZoneOffset.class;
+        }
+        if (type == DateTimeBuilder.class) {
+            return (T) new DateTimeBuilder(this);
+        }
+        return null;
     }
 
     //-----------------------------------------------------------------------

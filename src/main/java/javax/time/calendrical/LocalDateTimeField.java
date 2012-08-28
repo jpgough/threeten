@@ -334,7 +334,19 @@ public enum LocalDateTimeField implements DateTimeField {
      * The previous era is from year zero backwards.
      * This field may have a different meaning in a non-ISO calendar system.
      */
-    ERA("Era", ERAS, FOREVER, DateTimeValueRange.of(1, 9999));
+    ERA("Era", ERAS, FOREVER, DateTimeValueRange.of(1, 9999)),
+    /**
+     */
+    OFFSET_SECOND_OF_MINUTE("OffsetSecondOfMinute", SECONDS, MINUTES, DateTimeValueRange.of(-59, 59)),
+    /**
+     */
+    OFFSET_TOTAL_SECONDS("OffsetTotalSeconds", SECONDS, FOREVER, DateTimeValueRange.of(-18 * 3600, 18 * 3600)),
+    /**
+     */
+    OFFSET_MINUTE_OF_HOUR("OffsetMinuteOfHour", MINUTES, HOURS, DateTimeValueRange.of(-59, 59)),
+    /**
+     */
+    OFFSET_HOUR("OffsetHour", HOURS, FOREVER, DateTimeValueRange.of(-18, 18));
 
     private final String name;
     private final PeriodUnit baseUnit;
