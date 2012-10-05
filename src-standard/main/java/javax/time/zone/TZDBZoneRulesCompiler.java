@@ -616,9 +616,7 @@ final class TZDBZoneRulesCompiler {
     private void parseFile(File file) throws Exception {
         int lineNumber = 1;
         String line = null;
-        BufferedReader in = null;
-        try {
-            in = new BufferedReader(new FileReader(file));
+        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
             List<TZDBZone> openZone = null;
             for ( ; (line = in.readLine()) != null; lineNumber++) {
                 int index = line.indexOf('#');  // remove comments (doesn't handle # in quotes)
@@ -673,15 +671,7 @@ final class TZDBZoneRulesCompiler {
             }
         } catch (Exception ex) {
             throw new Exception("Failed while processing file '" + file + "' on line " + lineNumber + " '" + line + "'", ex);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (Exception ex) {
-                // ignore NPE and IOE
-            }
-        }
+        } 
     }
 
     /**
